@@ -1,11 +1,34 @@
 import { Client } from "@elastic/elasticsearch";
+import { EventEmitter } from "events";
 import fs from "fs";
-
-const client = new Client({ node: "http://localhost:9200" });
+// https://gemini.google.com/app/ad035f3411c57639
+const client = new Client({ node: "http://localhost:9200", log: "trace" });
+const indexName = "hanja-20240401";
 const testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
+const eEmitter = new EventEmitter();
 
+// const newDocArray = [];
 for (let key in testHanjaData) {
-  console.log(key); // 프로퍼티 이름 출력
+  // console.log(key); // 프로퍼티 이름 출력
+  // const item = { value: testHanjaData[key] };
+  let eachItemWithKey = {};
+  testHanjaData[key].map((item) => {
+    // console.log(item);
+    eachItemWithKey = { ...item, key };
+    console.log(eachItemWithKey);
+    client.index(
+      {
+        index: indexName,
+        body: eachItemWithKey,
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log("저장 성공: ", result);
+      }
+    );
+  });
 }
 
 async function bootstrap() {
