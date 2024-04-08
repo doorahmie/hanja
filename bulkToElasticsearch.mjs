@@ -1,5 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 import { EventEmitter } from "events";
+import { v4 as uuidv4 } from "uuid"; // ES Modules
 import fs from "fs";
 // https://gemini.google.com/app/ad035f3411c57639
 const client = new Client({ node: "http://localhost:9200", log: "trace" });
@@ -16,18 +17,24 @@ for (let key in testHanjaData) {
     // console.log(item);
     eachItemWithKey = { ...item, key };
     console.log(eachItemWithKey);
-    client.index(
-      {
-        index: indexName,
-        body: eachItemWithKey,
-      },
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log("저장 성공: ", result);
-      }
-    );
+    const id = uuidv4();
+    fs.writeFile("");
+    /**
+     * text 파일로 값 생성한뒤
+     * 한줄 씩 밀어넣는 bulk로 진행
+     */
+    // client.index(
+    //   {
+    //     index: indexName,
+    //     body: eachItemWithKey,
+    //   },
+    //   (err, result) => {
+    //     if (err) {
+    //       console.log(err);
+    //     }
+    //     console.log("저장 성공: ", result);
+    //   }
+    // );
   });
 }
 
