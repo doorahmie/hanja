@@ -12,49 +12,56 @@ const client = new Client({
   },
 });
 const indexName = "hanja-20240401";
+const bulkFileName = "test-bulk.txt";
 const testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
 const eEmitter = new EventEmitter();
 
-// const newDocArray = [];
-// for (let key in testHanjaData) {
-//   // console.log(key); // 프로퍼티 이름 출력
-//   // const item = { value: testHanjaData[key] };
-//   let eachItemWithKey = {};
-//   testHanjaData[key].map((item) => {
-//     // console.log(item);
-//     eachItemWithKey = { ...item, key };
-//     console.log(eachItemWithKey);
-//     const id = uuidv4();
-//     fs.writeFile("");
-//     /**
-//      * text 파일로 값 생성한뒤
-//      * 한줄 씩 밀어넣는 bulk로 진행
-//      */
-//     // client.index(
-//     //   {
-//     //     index: indexName,
-//     //     body: eachItemWithKey,
-//     //   },
-//     //   (err, result) => {
-//     //     if (err) {
-//     //       console.log(err);
-//     //     }
-//     //     console.log("저장 성공: ", result);
-//     //   }
-//     // );
-//   });
-// }
+const newDocArray = [];
 
-async function bootstrap() {
-  /*https://velog.io/@alli-eunbi/Elastic-Search-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-with-NodeJS*/
-  try {
-    client.ping();
-    console.log("9200번 포트 연결");
-  } catch (e) {
-    console.log(e);
-  }
+/**
+ * const newFile = () => {
+  fs.writeFile("test.txt", "test", (err) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log("파일 생성 성공");
+  });
+};
+
+newFile();
+*/
+
+for (let key in testHanjaData) {
+  console.log("key : ", key); // 프로퍼티 이름 출력
+  const item = { value: testHanjaData[key] };
+  let eachItemWithKey = {};
+  testHanjaData[key].map((item) => {
+    console.log(item);
+    eachItemWithKey = { ...item, key };
+    console.log("eachItemWithKey : ", eachItemWithKey);
+    const uuidId = uuidv4();
+    const idForBulk = { index: { _index: indexName, _id: uuidId } };
+    fs.appendFile(
+      bulkFileName,
+      JSON.stringify(idForBulk) +
+        "\r\n" +
+        JSON.stringify(eachItemWithKey) +
+        "\r\n",
+      (err) => err && console.error(err)
+    );
+  });
 }
-bootstrap();
+
+// async function bootstrap() {
+//   /*https://velog.io/@alli-eunbi/Elastic-Search-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-with-NodeJS*/
+//   try {
+//     client.ping();
+//     console.log("9200번 포트 연결");
+//   } catch (e) {
+//     console.log(e);
+//   }
+// }
+// bootstrap();
 
 /**
  * 1. json 파일을 읽어온다.
