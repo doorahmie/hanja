@@ -14,6 +14,7 @@ const client = new Client({
 const indexName = "hanja-20240401";
 const bulkFileName = "test-bulk.txt";
 const testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
+const hanjaDicData = JSON.parse(fs.readFileSync("hanjaDicData.json"));
 const eEmitter = new EventEmitter();
 
 const newDocArray = [];
@@ -32,13 +33,13 @@ newFile();
 */
 
 for (let key in testHanjaData) {
-  console.log("key : ", key); // 프로퍼티 이름 출력
+  // console.log("key : ", key); // 프로퍼티 이름 출력
   const item = { value: testHanjaData[key] };
   let eachItemWithKey = {};
   testHanjaData[key].map((item) => {
-    console.log(item);
+    // console.log(item);
     eachItemWithKey = { ...item, key };
-    console.log("eachItemWithKey : ", eachItemWithKey);
+    // console.log("eachItemWithKey : ", eachItemWithKey);
     const uuidId = uuidv4();
     const idForBulk = { index: { _index: indexName, _id: uuidId } };
     fs.appendFile(
