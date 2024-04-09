@@ -13,8 +13,9 @@ const client = new Client({
 });
 const indexName = "hanja-20240401";
 const bulkFileName = "test-bulk.txt";
-const testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
+let testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
 const hanjaDicData = JSON.parse(fs.readFileSync("hanjaDic.json"));
+testHanjaData = hanjaDicData;
 const eEmitter = new EventEmitter();
 
 const newDocArray = [];
