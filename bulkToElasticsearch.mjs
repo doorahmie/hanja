@@ -14,7 +14,7 @@ const client = new Client({
 const indexName = "hanja-20240401";
 const bulkFileName = "test-bulk.txt";
 const testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
-const hanjaDicData = JSON.parse(fs.readFileSync("hanjaDicData.json"));
+const hanjaDicData = JSON.parse(fs.readFileSync("hanjaDic.json"));
 const eEmitter = new EventEmitter();
 
 const newDocArray = [];
@@ -37,7 +37,7 @@ for (let key in testHanjaData) {
   const item = { value: testHanjaData[key] };
   let eachItemWithKey = {};
   testHanjaData[key].map((item) => {
-    // console.log(item);
+    console.log(item);
     eachItemWithKey = { ...item, key };
     // console.log("eachItemWithKey : ", eachItemWithKey);
     const uuidId = uuidv4();
