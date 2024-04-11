@@ -27,67 +27,76 @@ async function connectionTest() {
 }
 connectionTest();
 
-// const indexName = "hanja-20240409-1";
-// let testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
-// const hanjaDicData = JSON.parse(fs.readFileSync("hanjaDic.json"));
-// testHanjaData = hanjaDicData;
+/* https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-connecting.html */
+const indexName = "hanja-20240411-1";
+const body = {
+  mappings: {
+    properties: {
+      kor: { type: "text" },
+      def: { type: "text" },
+      key: { type: "keyword" },
+    },
+  },
+};
+let testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
+const hanjaDicData = JSON.parse(fs.readFileSync("hanjaDic.json"));
+testHanjaData = hanjaDicData;
 
-// await client.indices.create(
-//   {
-//     index: indexName,
-//     operations: {
-//       mappings: {
-//         properties: {
-//           kor: { type: "text" },
-//           def: { type: "text" },
-//           key: { type: "keyword" },
-//         },
-//       },
-//     },
-//   },
-//   { ignore: [400] }
-// );
+/**
+ * await client.indices.create({
+  index: indexName,
+  body,
+});
+*/
 
-// let bulkArray = [];
-// for (let key in testHanjaData) {
-//   // console.log("key : ", key); // 프로퍼티 이름 출력
-//   const item = { value: testHanjaData[key] };
-//   let eachItemWithKey = {};
-//   testHanjaData[key].map((item) => {
-//     console.log(item);
-//     const uuidId = uuidv4();
-//     eachItemWithKey = { ...item, key, id: uuidId };
-
-//     bulkArray.push(eachItemWithKey);
-//   });
-// }
-// console.log(bulkArray[1]);
+let bulkArray = [];
+for (let key in testHanjaData) {
+  // console.log("key : ", key); // 프로퍼티 이름 출력
+  const item = { value: testHanjaData[key] };
+  let eachItemWithKey = {};
+  testHanjaData[key].map((item) => {
+    console.log(item);
+    // const uuidId = uuidv4();
+    // eachItemWithKey = { ...item, key, id: uuidId };
+    eachItemWithKey = { ...item, key };
+    bulkArray.push(eachItemWithKey);
+  });
+}
+console.log("bulkArray[0] : ", bulkArray[0]);
+console.log(bulkArray.length);
 
 // const operations = bulkArray.flatMap((doc) => [
 //   { index: { _index: indexName } },
 //   doc,
 // ]);
+const operations = bulkArray.map((doc) => {
+  return { _index: indexName, ...doc };
+});
 
-// const bulkResponse = await client.bulk({ refresh: true, operations });
+console.log("operations[0] : ", operations[0]);
 
-// if (bulkResponse.errors) {
-//   const erroredDocuments = [];
-//   // The items array has the same order of the dataset we just indexed.
-//   // The presence of the `error` key indicates that the operation
-//   // that we did for the document has failed.
-//   bulkResponse.items.forEach((action, i) => {
-//     const operation = Object.keys(action)[0];
-//     if (action[operation].error) {
-//       erroredDocuments.push({
-//         // If the status is 429 it means that you can retry the document,
-//         // otherwise it's very likely a mapping error, and you should
-//         // fix the document before to try it again.
-//         status: action[operation].status,
-//         error: action[operation].error,
-//         operation: operations[i * 2],
-//         document: operations[i * 2 + 1],
-//       });
-//     }
-//   });
-//   //https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/bulk_examples.html
-// }
+const bulkResponse = await client.bulk({ refresh: true, operations });
+
+if (bulkResponse.errors) {
+  const erroredDocuments = [];
+  // The items array has the same order of the dataset we just indexed.
+  // The presence of the `error` key indicates that the operation
+  // that we did for the document has failed.
+  bulkResponse.items.forEach((action, i) => {
+    const operation = Object.keys(action)[0];
+    if (action[operation].error) {
+      erroredDocuments.push({
+        // If the status is 429 it means that you can retry the document,
+        // otherwise it's very likely a mapping error, and you should
+        // fix the document before to try it again.
+        status: action[operation].status,
+        error: action[operation].error,
+        operation: operations[i * 2],
+        document: operations[i * 2 + 1],
+      });
+    }
+  });
+  //https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/bulk_examples.html
+} else {
+  console.log("성공");
+}
