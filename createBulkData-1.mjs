@@ -56,9 +56,9 @@ for (let key in testHanjaData) {
   let eachItemWithKey = {};
   testHanjaData[key].map((item) => {
     console.log(item);
-    // const uuidId = uuidv4();
-    // eachItemWithKey = { ...item, key, id: uuidId };
-    eachItemWithKey = { ...item, key };
+    const uuidId = uuidv4();
+    eachItemWithKey = { ...item, key, id: uuidId };
+    // eachItemWithKey = { ...item, key };
     bulkArray.push(eachItemWithKey);
   });
 }
