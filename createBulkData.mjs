@@ -18,7 +18,7 @@ const client = new Client({
     password: "3BwGiJHEX8olEGiJEKDp",
   },
 });
-const indexName = "hanja-20240409-1";
+const indexName = "hanja-20240411-1";
 const bulkFileName = "test-bulk.txt";
 const bulkFileName2 = "test-bulk2.txt";
 let testHanjaData = JSON.parse(fs.readFileSync("testHanjaData.json"));
